@@ -3,8 +3,9 @@ package POE::Filter::Zlib;
 use Carp;
 use Compress::Zlib qw(compress uncompress);
 use vars qw($VERSION);
+use base qw(POE::Filter);
 
-$VERSION = '1.0';
+$VERSION = '1.1';
 
 sub PUT_LITERAL () { 1 }
 
@@ -20,8 +21,8 @@ sub new {
 }
 
 sub level {
-  my ($self) = shift;
-  my ($level) = shift;
+  my $self = shift;
+  my $level = shift;
 
   if ( defined ( $level ) ) {
 	$self->{level} = $level;
@@ -56,7 +57,7 @@ sub get_one_start {
 }
 
 sub get_one {
-  my ($self) = shift;
+  my $self = shift;
   my $events = [];
 
   if ( my $raw_line = shift ( @{ $self->{BUFFER} } ) ) {
