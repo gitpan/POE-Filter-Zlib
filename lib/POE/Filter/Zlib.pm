@@ -5,7 +5,7 @@ use Compress::Zlib qw(compress uncompress);
 use vars qw($VERSION);
 use base qw(POE::Filter);
 
-$VERSION = '1.1';
+$VERSION = '1.2';
 
 sub PUT_LITERAL () { 1 }
 
@@ -13,21 +13,15 @@ sub new {
   my $type = shift;
   croak "$type requires an even number of parameters" if @_ % 2;
   my $buffer = { @_ };
-  foreach my $option ( keys %{ $buffer } ) {
-	$buffer->{ lc( $option) } = delete( $buffer->{ $option } );
-  }
+  $buffer->{ lc $_ } = delete $buffer->{ $_ } for keys %{ $buffer };
   $buffer->{BUFFER} = [];
-  return bless($buffer, $type);
+  return bless $buffer, $type;
 }
 
 sub level {
   my $self = shift;
   my $level = shift;
-
-  if ( defined ( $level ) ) {
-	$self->{level} = $level;
-  }
-  return $self->{level};
+  $self->{level} = $level if defined $level;
 }
 
 sub get {
@@ -36,9 +30,10 @@ sub get {
 
   foreach my $raw_line (@$raw_lines) {
 	if ( my $line = uncompress( $raw_line ) ) {
-		push( @$events, $line );
+		push @$events, $line;
 	} else {
-		warn "Couldn\'t uncompress input\n";
+		warn "Couldn\'t uncompress input: $raw_line\n";
+		#push @$events, $raw_line;
 	}
   }
   return $events;
@@ -46,25 +41,19 @@ sub get {
 
 sub get_one_start {
   my ($self, $raw_lines) = @_;
-
-  foreach my $raw_line (@$raw_lines) {
-	if ( my $line = uncompress( $raw_line ) ) {
-		push( @$events, $line );
-	} else {
-		warn "Couldn\'t uncompress input\n";
-	}
-  }
+  push @{ $self->{BUFFER} }, $_ for @{ $raw_lines };
 }
 
 sub get_one {
   my $self = shift;
   my $events = [];
 
-  if ( my $raw_line = shift ( @{ $self->{BUFFER} } ) ) {
+  if ( my $raw_line = shift @{ $self->{BUFFER} } ) {
 	if ( my $line = uncompress( $raw_line ) ) {
-		push( @$events, $line );
+		push @$events, $line;
 	} else {
-		warn "Couldn\'t uncompress input\n";
+		warn "Couldn\'t uncompress input: $raw_line\n";
+		#push @$events, $raw_line;
 	}
   }
   return $events;
@@ -76,9 +65,9 @@ sub put {
 
   foreach my $event (@$events) {
 	if ( my $line = compress( $event, $self->{level} ) ) {
-		push( @$raw_lines, $line );
+		push @$raw_lines, $line;
 	} else {
-		warn "Couldn\'t compress output\n";
+		warn "Couldn\'t compress output: $event\n";
 	}
   }
   return $raw_lines;
