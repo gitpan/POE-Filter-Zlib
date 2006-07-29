@@ -5,7 +5,7 @@ use Compress::Zlib qw(compress uncompress);
 use vars qw($VERSION);
 use base qw(POE::Filter);
 
-$VERSION = '1.2';
+$VERSION = '1.3';
 
 sub PUT_LITERAL () { 1 }
 
@@ -98,8 +98,12 @@ POE::Filter::Zlib -- A POE filter wrapped around Compress::Zlib
 
 =head1 DESCRIPTION
 
-POE::Filter::Zlib provides a POE filter for performing compression/uncompression using L<Compress::Zlib|Compress::Zlib>. It is
-suitable for use with L<POE::Filter::Stackable|POE::Filter::Stackable>.
+POE::Filter::Zlib provides a POE filter for performing compression/uncompression using L<Compress::Zlib>. It is
+suitable for use with L<POE::Filter::Stackable>.
+
+This filter is not ideal for streaming compressed data over sockets etc. as it employs compress and uncompress zlib functions.
+
+L<POE::Filter::Zlib::Stream> is recommended for that type of activity.
 
 =head1 METHODS
 
@@ -138,9 +142,15 @@ Chris Williams <chris@bingosnet.co.uk>
 
 =head1 SEE ALSO
 
-L<POE|POE>
-L<Compress::Zlib|Compress::Zlib>
-L<POE::Filter::Stackable|POE::Filter::Stackable>
+L<POE>
+
+L<POE::Filter>
+
+L<POE::Filter::Zlib::Stream>
+
+L<Compress::Zlib>
+
+L<POE::Filter::Stackable>
 
 =cut
 

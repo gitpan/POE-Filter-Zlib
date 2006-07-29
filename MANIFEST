@@ -1,7 +1,9 @@
 lib/POE/Filter/Zlib.pm
+lib/POE/Filter/Zlib/Stream.pm
 MANIFEST
 Makefile.PL
 README
 t/1.t
 t/2.t
+t/3.t
 META.yml                                 Module meta-data (added by MakeMaker)
