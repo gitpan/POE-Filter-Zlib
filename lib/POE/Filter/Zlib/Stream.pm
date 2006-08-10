@@ -5,7 +5,7 @@ use Compress::Zlib;
 use vars qw($VERSION);
 use base qw(POE::Filter);
 
-$VERSION = '1.3';
+$VERSION = '1.4';
 
 sub new {
   my $type = shift;
@@ -13,12 +13,14 @@ sub new {
   my $buffer = { @_ };
   $buffer->{ lc $_ } = delete $buffer->{ $_ } for keys %{ $buffer };
   $buffer->{BUFFER} = '';
-  $buffer->{d} = deflateInit();
+  delete $buffer->{deflateopts} unless ref ( $buffer->{deflateopts} ) eq 'HASH';
+  $buffer->{d} = deflateInit( %{ $buffer->{deflateopts} } );
   unless ( $buffer->{d} ) {
 	warn "Failed to create deflate stream\n";
 	return;
   }
-  $buffer->{i} = inflateInit();
+  delete $buffer->{inflateopts} unless ref ( $buffer->{inflateopts} ) eq 'HASH';
+  $buffer->{i} = inflateInit( %{ $buffer->{inflateopts} } );
   unless ( $buffer->{i} ) {
 	warn "Failed to create inflate stream\n";
 	return;
@@ -75,7 +77,7 @@ POE::Filter::Zlib::Stream -- A POE filter wrapped around Compress::Zlib deflate 
 
     use POE::Filter::Zlib::Stream;
 
-    my $filter = POE::Filter::Zlib::Stream->new();
+    my $filter = POE::Filter::Zlib::Stream->new( deflateopts => { -Level => 9 } );
     my $scalar = 'Blah Blah Blah';
     my $compressed_array   = $filter->put( [ $scalar ] );
     my $uncompressed_array = $filter->get( $compressed_array );
@@ -103,19 +105,24 @@ Ideal for streaming compressed data over sockets.
 
 new
 
-Creates a new POE::Filter::Zlib::Stream object. Takes one optional argument.
+Creates a new POE::Filter::Zlib::Stream object. Takes some optional arguments:
+
+  "deflateopts", a hashref of options to be passed to deflateInit();
+  "inflateopts", a hashref of options to be passed to inflateInit();
+
+Consult L<Compress::Zlib> for more detail regarding these options.
 
 =item *
 
 get
 
-Takes an arrayref which is contains lines of compressed input. Returns an arrayref of uncompressed lines.
+Takes an arrayref which is contains streams of compressed input. Returns an arrayref of uncompressed streams.
 
 =item *
 
 put
 
-Takes an arrayref containing lines of uncompressed output, returns an arrayref of compressed lines.
+Takes an arrayref containing streams of uncompressed output, returns an arrayref of compressed streams.
 
 =back
 

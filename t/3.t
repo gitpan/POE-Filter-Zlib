@@ -15,7 +15,7 @@ ok( $teststring eq $answer->[0], 'Round trip test' );
 
 my $stack = POE::Filter::Stackable->new( Filters =>
 	[ 
-		POE::Filter::Zlib::Stream->new(),
+		POE::Filter::Zlib::Stream->new( deflateopts => { -Level => 9 } ),
 		POE::Filter::Line->new(),
 	],
 );
