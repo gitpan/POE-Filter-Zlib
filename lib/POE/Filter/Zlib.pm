@@ -5,9 +5,7 @@ use Compress::Zlib qw(compress uncompress);
 use vars qw($VERSION);
 use base qw(POE::Filter);
 
-$VERSION = '1.4';
-
-sub PUT_LITERAL () { 1 }
+$VERSION = '1.5';
 
 sub new {
   my $type = shift;
@@ -105,32 +103,37 @@ This filter is not ideal for streaming compressed data over sockets etc. as it e
 
 L<POE::Filter::Zlib::Stream> is recommended for that type of activity.
 
+=head1 CONSTRUCTOR
+
+=over
+
+=item new
+
+Creates a new POE::Filter::Zlib object. Takes one optional argument, 
+
+  'level': the level of compression to employ.
+
+Consult L<Compress::Zlib> for details.
+
+=back
+
 =head1 METHODS
 
 =over
 
-=item *
+=item get
 
-new
+=item get_one_start
 
-Creates a new POE::Filter::Zlib object. Takes one optional argument, 'level': the level of compression to employ.
-Consult L<Compress::Zlib|Compress::Zlib> for details.
-
-=item *
-
-get
+=item get_one
 
 Takes an arrayref which is contains lines of compressed input. Returns an arrayref of uncompressed lines.
 
-=item *
-
-put
+=item put
 
 Takes an arrayref containing lines of uncompressed output, returns an arrayref of compressed lines.
 
-=item *
-
-level
+=item level
 
 Sets the level of compression employed to the given value. If no value is supplied, returns the current level setting.
 

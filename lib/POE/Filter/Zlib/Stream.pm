@@ -5,7 +5,7 @@ use Compress::Zlib;
 use vars qw($VERSION);
 use base qw(POE::Filter);
 
-$VERSION = '1.4';
+$VERSION = '1.5';
 
 sub new {
   my $type = shift;
@@ -97,13 +97,11 @@ Unlike L<POE::Filter::Zlib> this filter uses deflate and inflate, not the higher
 
 Ideal for streaming compressed data over sockets.
 
-=head1 METHODS
+=head1 CONSTRUCTOR
 
 =over
 
-=item *
-
-new
+=item new
 
 Creates a new POE::Filter::Zlib::Stream object. Takes some optional arguments:
 
@@ -112,15 +110,21 @@ Creates a new POE::Filter::Zlib::Stream object. Takes some optional arguments:
 
 Consult L<Compress::Zlib> for more detail regarding these options.
 
-=item *
+=back
 
-get
+=head1 METHODS
+
+=over
+
+=item get
+
+=item get_one_start
+
+=item get_one
 
 Takes an arrayref which is contains streams of compressed input. Returns an arrayref of uncompressed streams.
 
-=item *
-
-put
+=item put
 
 Takes an arrayref containing streams of uncompressed output, returns an arrayref of compressed streams.
 
