@@ -6,7 +6,7 @@ use Compress::Zlib;
 use vars qw($VERSION);
 use base qw(POE::Filter);
 
-$VERSION = '1.6';
+$VERSION = '1.7';
 
 sub new {
   my $type = shift;

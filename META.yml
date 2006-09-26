@@ -1,13 +1,15 @@
-# http://module-build.sourceforge.net/META-spec.html
-#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
-name:         POE-Filter-Zlib
-version:      1.6
-version_from: lib/POE/Filter/Zlib.pm
-installdirs:  site
-requires:
-    Carp:                          0
-    Compress::Zlib:                1.34
-    POE:                           0.3501
-
+author: 'Chris Williams <chris@bingosnet.co.uk>'
 distribution_type: module
-generated_by: ExtUtils::MakeMaker version 6.30
+generated_by: Module::Install version 0.64
+license: perl
+module_name: POE::Filter::Zlib
+name: POE-Filter-Zlib
+no_index:
+  directory:
+    - inc
+    - t
+requires:
+  Carp: 0
+  Compress::Zlib: 1.34
+  POE: 0.3501
+version: 1.7

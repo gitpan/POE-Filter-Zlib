@@ -1,6 +1,9 @@
 POE::Filter::Zlib
 =================
 
+1.7	Tue Sep 26 11:51:46 BST 2006
+	- Switched to Module::Install
+
 1.6	Sun Sep 10 09:14:56 BST 2006
 	- Makefile.PL was executable. Fixed.
 	- Added 'use strict'.
