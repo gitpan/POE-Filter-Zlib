@@ -2,11 +2,11 @@ package POE::Filter::Zlib;
 
 use strict;
 use Carp;
-use Compress::Zlib qw(compress uncompress);
+use Compress::Zlib qw(compress uncompress Z_DEFAULT_COMPRESSION);
 use vars qw($VERSION);
 use base qw(POE::Filter);
 
-$VERSION = '1.7';
+$VERSION = '1.8';
 
 sub new {
   my $type = shift;
@@ -63,7 +63,7 @@ sub put {
   my $raw_lines = [];
 
   foreach my $event (@$events) {
-	if ( my $line = compress( $event, $self->{level} ) ) {
+	if ( my $line = compress( $event, ( $self->{level} || Z_DEFAULT_COMPRESSION ) ) ) {
 		push @$raw_lines, $line;
 	} else {
 		warn "Couldn\'t compress output: $event\n";

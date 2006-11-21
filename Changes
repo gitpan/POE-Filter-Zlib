@@ -1,6 +1,9 @@
 POE::Filter::Zlib
 =================
 
+1.8	Tue Nov 21 17:44:04 GMT 2006
+	- Fixed a bug exposed by new Compress::Zlib and Level parameter.
+
 1.7	Tue Sep 26 11:51:46 BST 2006
 	- Switched to Module::Install
 
