@@ -6,7 +6,7 @@ use Compress::Zlib qw(compress uncompress Z_DEFAULT_COMPRESSION);
 use vars qw($VERSION);
 use base qw(POE::Filter);
 
-$VERSION = '1.8';
+$VERSION = '1.90';
 
 sub new {
   my $type = shift;
@@ -30,7 +30,8 @@ sub get {
   foreach my $raw_line (@$raw_lines) {
 	if ( my $line = uncompress( $raw_line ) ) {
 		push @$events, $line;
-	} else {
+	} 
+	else {
 		warn "Couldn\'t uncompress input: $raw_line\n";
 		#push @$events, $raw_line;
 	}
@@ -50,7 +51,8 @@ sub get_one {
   if ( my $raw_line = shift @{ $self->{BUFFER} } ) {
 	if ( my $line = uncompress( $raw_line ) ) {
 		push @$events, $line;
-	} else {
+	} 
+	else {
 		warn "Couldn\'t uncompress input: $raw_line\n";
 		#push @$events, $raw_line;
 	}
@@ -65,7 +67,8 @@ sub put {
   foreach my $event (@$events) {
 	if ( my $line = compress( $event, ( $self->{level} || Z_DEFAULT_COMPRESSION ) ) ) {
 		push @$raw_lines, $line;
-	} else {
+	} 
+	else {
 		warn "Couldn\'t compress output: $event\n";
 	}
   }

@@ -1,6 +1,10 @@
 POE::Filter::Zlib
 =================
 
+1.90	Mon Feb 19 12:01:47 GMT 2007
+	- Makefile.PL fully Module::Install-ified.
+	- Added kwalitee test.
+
 1.8	Tue Nov 21 17:44:04 GMT 2006
 	- Fixed a bug exposed by new Compress::Zlib and Level parameter.
 

@@ -1,20 +1,9 @@
-#use ExtUtils::MakeMaker;
-# See lib/ExtUtils/MakeMaker.pm for details of how to influence
-# the contents of the Makefile that is written.
-# Blah!
-
 use inc::Module::Install;
-
+name 'POE-Filter-Zlib';
 author 'Chris Williams <chris@bingosnet.co.uk>';
 license 'perl';
-
-WriteMakefile(
-			  'NAME'	=> 'POE::Filter::Zlib',
-			  'PREREQ_PM' => {
-							  'POE'    => 0.3501,
-							  'Compress::Zlib' => 1.34,
-							  'Carp' => 0,
-							 },
-			  'VERSION_FROM' => 'lib/POE/Filter/Zlib.pm', # finds $VERSION
-			  'dist' => { 'COMPRESS' => 'gzip --best' },
-			 );
+version_from 'lib/POE/Filter/Zlib.pm';
+requires 'Carp' => 0;
+requires 'Compress::Zlib' => 1.34;
+requires 'POE'    => 0.38;
+WriteAll();
