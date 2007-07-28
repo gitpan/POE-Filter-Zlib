@@ -3,6 +3,8 @@ name 'POE-Filter-Zlib';
 author 'Chris Williams <chris@bingosnet.co.uk>';
 license 'perl';
 version_from 'lib/POE/Filter/Zlib.pm';
+abstract_from 'lib/POE/Filter/Zlib.pm';
+build_requires 'Test::More' => 0.47;
 requires 'Carp' => 0;
 requires 'Compress::Zlib' => 1.34;
 requires 'POE'    => 0.38;

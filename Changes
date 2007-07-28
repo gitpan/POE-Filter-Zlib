@@ -1,6 +1,9 @@
 POE::Filter::Zlib
 =================
 
+1.91	Sat Jul 28 12:54:07 BST 2007
+	- Fixes to abstract_from and build_requires in Makefile.PL
+
 1.90	Mon Feb 19 12:01:47 GMT 2007
 	- Makefile.PL fully Module::Install-ified.
 	- Added kwalitee test.

@@ -6,7 +6,7 @@ use Compress::Zlib;
 use vars qw($VERSION);
 use base qw(POE::Filter);
 
-$VERSION = '1.90';
+$VERSION = '1.91';
 
 sub new {
   my $type = shift;
@@ -72,7 +72,7 @@ __END__
 
 =head1 NAME
 
-POE::Filter::Zlib::Stream -- A POE filter wrapped around Compress::Zlib deflate and inflate.
+POE::Filter::Zlib::Stream - A POE filter wrapped around Compress::Zlib deflate and inflate.
 
 =head1 SYNOPSIS
 
