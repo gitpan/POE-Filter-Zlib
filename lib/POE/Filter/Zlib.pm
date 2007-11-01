@@ -6,7 +6,7 @@ use Compress::Zlib qw(compress uncompress Z_DEFAULT_COMPRESSION);
 use vars qw($VERSION);
 use base qw(POE::Filter);
 
-$VERSION = '1.91';
+$VERSION = '1.92';
 
 sub new {
   my $type = shift;
