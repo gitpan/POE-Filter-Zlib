@@ -19,4 +19,4 @@ requires:
   Carp: 0
   Compress::Zlib: 1.34
   POE: 0.38
-version: 1.92
+version: 1.93

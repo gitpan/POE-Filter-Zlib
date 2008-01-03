@@ -1,17 +1,22 @@
-use Test::More tests => 6;
+use Test::More tests => 10;
 BEGIN { use_ok('POE::Filter::Zlib::Stream') };
 use POE::Filter::Line;
 use POE::Filter::Stackable;
-use Data::Dumper;
 
-my $filter = POE::Filter::Zlib::Stream->new();
+my $original = POE::Filter::Zlib::Stream->new();
+my $clone = $original->clone();
 
-isa_ok( $filter, "POE::Filter::Zlib::Stream" );
+foreach my $filter ( $original, $clone ) {
 
-my $teststring = "All the little fishes";
-my $compressed = $filter->put( [ $teststring ] );
-my $answer = $filter->get( [ $compressed->[0] ] );
-ok( $teststring eq $answer->[0], 'Round trip test' );
+  isa_ok( $filter, "POE::Filter::Zlib::Stream" );
+  isa_ok( $filter, "POE::Filter" );
+
+  my $teststring = "All the little fishes";
+  my $compressed = $filter->put( [ $teststring ] );
+  my $answer = $filter->get( [ $compressed->[0] ] );
+  ok( $teststring eq $answer->[0], 'Round trip test' );
+
+}
 
 my $stack = POE::Filter::Stackable->new( Filters =>
 	[ 

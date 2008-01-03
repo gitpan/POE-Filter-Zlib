@@ -6,7 +6,7 @@ use Compress::Zlib;
 use vars qw($VERSION);
 use base qw(POE::Filter);
 
-$VERSION = '1.92';
+$VERSION = '1.93';
 
 sub new {
   my $type = shift;
@@ -64,6 +64,14 @@ sub put {
 	push @$raw_lines, $dout . $fout;
   }
   return $raw_lines;
+}
+
+sub clone {
+  my $self = shift;
+  my $nself = { };
+  $nself->{$_} = $self->{$_} for keys %{ $self };
+  $nself->{BUFFER} = '';
+  return bless $nself, ref $self;
 }
 
 1;
@@ -128,6 +136,10 @@ Takes an arrayref which is contains streams of compressed input. Returns an arra
 =item put
 
 Takes an arrayref containing streams of uncompressed output, returns an arrayref of compressed streams.
+
+=item clone
+
+Makes a copy of the filter, and clears the copy's buffer.
 
 =back
 
