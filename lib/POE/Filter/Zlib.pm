@@ -1,12 +1,13 @@
 package POE::Filter::Zlib;
 
 use strict;
+use warnings;
 use Carp;
 use Compress::Zlib qw(compress uncompress Z_DEFAULT_COMPRESSION);
 use vars qw($VERSION);
 use base qw(POE::Filter);
 
-$VERSION = '1.93';
+$VERSION = '1.94';
 
 sub new {
   my $type = shift;
