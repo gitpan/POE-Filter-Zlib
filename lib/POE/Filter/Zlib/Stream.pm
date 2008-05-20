@@ -7,7 +7,7 @@ use Compress::Zlib;
 use vars qw($VERSION);
 use base qw(POE::Filter);
 
-$VERSION = '1.94';
+$VERSION = '1.96';
 
 sub new {
   my $type = shift;
@@ -33,6 +33,20 @@ sub new {
 sub get_one_start {
   my ($self, $raw_lines) = @_;
   $self->{BUFFER} .= join '', @{ $raw_lines };
+}
+
+sub get_pending {
+  my $self = shift;
+  return unless length $self->{BUFFER};
+  
+  my @return;
+  while(1) {
+    my $next = $self->get_one();
+    last unless @$next;
+    push @return, @$next;
+  }
+
+  return \@return;
 }
 
 sub get_one {
@@ -134,6 +148,10 @@ Consult L<Compress::Zlib> for more detail regarding these options.
 
 Takes an arrayref which is contains streams of compressed input. Returns an arrayref of uncompressed streams.
 
+=item get_pending
+
+Returns any data in a filter's input buffer. The filter's input buffer is not cleared, however.
+
 =item put
 
 Takes an arrayref containing streams of uncompressed output, returns an arrayref of compressed streams.
@@ -147,6 +165,12 @@ Makes a copy of the filter, and clears the copy's buffer.
 =head1 AUTHOR
 
 Chris Williams <chris@bingosnet.co.uk>
+
+=head1 LICENSE
+
+Copyright C<(c)> Chris Williams.
+
+This program is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
 
 =head1 SEE ALSO
 

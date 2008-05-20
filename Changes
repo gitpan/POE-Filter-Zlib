@@ -1,6 +1,11 @@
 POE::Filter::Zlib
 =================
 
+1.96	Tue May 20 11:48:33 BST 2008
+	- removed kwalitee test
+	- added license information
+	- Applied patch from Hinrik Örn Sigurðsson [RT #36037]
+
 1.94	Fri Mar  7 07:42:45 GMT 2008
 	- Kwalitee fixes.
 
