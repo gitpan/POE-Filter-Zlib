@@ -7,7 +7,7 @@ use Compress::Zlib;
 use vars qw($VERSION);
 use base qw(POE::Filter);
 
-$VERSION = '1.96';
+$VERSION = '2.00';
 
 sub new {
   my $type = shift;
@@ -27,26 +27,17 @@ sub new {
 	warn "Failed to create inflate stream\n";
 	return;
   }
+  if (not defined $buffer->{flushtype}) {
+  	$buffer->{flushtype} = Z_SYNC_FLUSH;
+  }
   return bless $buffer, $type;
 }
+
+# use inherited get() from POE::Filter
 
 sub get_one_start {
   my ($self, $raw_lines) = @_;
   $self->{BUFFER} .= join '', @{ $raw_lines };
-}
-
-sub get_pending {
-  my $self = shift;
-  return unless length $self->{BUFFER};
-  
-  my @return;
-  while(1) {
-    my $next = $self->get_one();
-    last unless @$next;
-    push @return, @$next;
-  }
-
-  return \@return;
 }
 
 sub get_one {
@@ -58,7 +49,15 @@ sub get_one {
 	warn "Couldn\'t inflate buffer\n";
 	return [ ];
   }
+  if ($status == Z_STREAM_END) {
+  	$self->{i} = inflateInit( %{ $self->{inflateopts} } );
+  }
   return [ $out ];
+}
+
+sub get_pending {
+  my $self = shift;
+  return $self->{BUFFER} ? [ $self->{BUFFER} ] : undef;
 }
 
 sub put {
@@ -71,10 +70,13 @@ sub put {
 	  warn "Couldn\'t deflate: $event\n";
 	  next;
 	}
-	my ($fout,$fstat) = $self->{d}->flush( Z_SYNC_FLUSH );
+	my ($fout,$fstat) = $self->{d}->flush( $self->{flushtype} );
 	unless ( $fstat == Z_OK ) {
 	  warn "Couldn\'t flush/deflate: $event\n";
 	  next;
+	}
+	if ($self->{flushtype} == Z_FINISH) {
+  		$self->{d} = deflateInit( %{ $self->{deflateopts} } );
 	}
 	push @$raw_lines, $dout . $fout;
   }
@@ -129,8 +131,23 @@ Ideal for streaming compressed data over sockets.
 
 Creates a new POE::Filter::Zlib::Stream object. Takes some optional arguments:
 
-  "deflateopts", a hashref of options to be passed to deflateInit();
-  "inflateopts", a hashref of options to be passed to inflateInit();
+=over 4
+
+=item "deflateopts"
+
+a hashref of options to be passed to deflateInit();
+
+=item "inflateopts"
+
+a hashref of options to be passed to inflateInit();
+
+=item "flushtype"
+
+The type of flush to use when flushing the compressed data. Defaults to
+Z_SYNC_FLUSH so you get a single stream, but if there is a
+L<POE::Filter::Zlib> on the other end, you want to set this to Z_FINISH.
+
+=back
 
 Consult L<Compress::Zlib> for more detail regarding these options.
 
@@ -166,9 +183,11 @@ Makes a copy of the filter, and clears the copy's buffer.
 
 Chris Williams <chris@bingosnet.co.uk>
 
+Martijn van Beers <martijn@cpan.org>
+
 =head1 LICENSE
 
-Copyright C<(c)> Chris Williams.
+Copyright C<(c)> Chris Williams and Martijn van Beers.
 
 This program is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
 

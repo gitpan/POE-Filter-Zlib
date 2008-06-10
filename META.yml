@@ -7,7 +7,7 @@ build_requires:
   POE::Filter::Stackable: 0
   Test::More: 0.47
 distribution_type: module
-generated_by: 'Module::Install version 0.73'
+generated_by: 'Module::Install version 0.75'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.3.html
@@ -23,4 +23,4 @@ requires:
   POE: 0.38
   POE::Filter: 0
   perl: 5.000
-version: 1.96
+version: 2.00

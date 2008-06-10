@@ -7,7 +7,7 @@ use Compress::Zlib qw(compress uncompress Z_DEFAULT_COMPRESSION);
 use vars qw($VERSION);
 use base qw(POE::Filter);
 
-$VERSION = '1.96';
+$VERSION = '2.00';
 
 sub new {
   my $type = shift;
@@ -24,25 +24,16 @@ sub level {
   $self->{level} = $level if defined $level;
 }
 
-sub get {
-  my ($self, $raw_lines) = @_;
-  my $events = [];
-
-  foreach my $raw_line (@$raw_lines) {
-	if ( my $line = uncompress( $raw_line ) ) {
-		push @$events, $line;
-	} 
-	else {
-		warn "Couldn\'t uncompress input: $raw_line\n";
-		#push @$events, $raw_line;
-	}
-  }
-  return $events;
-}
+# use inherited get() from POE::Filter
 
 sub get_one_start {
   my ($self, $raw_lines) = @_;
   push @{ $self->{BUFFER} }, $_ for @{ $raw_lines };
+}
+
+sub get_pending {
+  my $self = shift;
+  return $self->{BUFFER};
 }
 
 sub get_one {
@@ -142,6 +133,10 @@ Consult L<Compress::Zlib> for details.
 
 Takes an arrayref which is contains lines of compressed input. Returns an arrayref of uncompressed lines.
 
+=item get_pending
+
+Returns any data in a filter's input buffer. The filter's input buffer is not cleared, however.
+
 =item put
 
 Takes an arrayref containing lines of uncompressed output, returns an arrayref of compressed lines.
@@ -160,9 +155,11 @@ Sets the level of compression employed to the given value. If no value is suppli
 
 Chris Williams <chris@bingosnet.co.uk>
 
+Martijn van Beers <martijn@cpan.org>
+
 =head1 LICENSE
 
-Copyright C<(c)> Chris Williams.
+Copyright C<(c)> Chris Williams and Martijn van Beers.
 
 This program is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
 

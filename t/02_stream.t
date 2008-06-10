@@ -14,7 +14,7 @@ foreach my $filter ( $original, $clone ) {
   my $teststring = "All the little fishes";
   my $compressed = $filter->put( [ $teststring ] );
   my $answer = $filter->get( [ $compressed->[0] ] );
-  ok( $teststring eq $answer->[0], 'Round trip test' );
+  is( $teststring, $answer->[0], 'Round trip test' );
 
 }
 
@@ -32,5 +32,5 @@ my $back = $stack->get( $out );
 
 while ( my $thing = shift @input ) {
   my $thang = shift @$back;
-  ok( $thing eq $thang, $thing );
+  is( $thing, $thang, $thing );
 }
