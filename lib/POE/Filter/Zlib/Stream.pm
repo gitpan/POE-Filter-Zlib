@@ -3,11 +3,11 @@ package POE::Filter::Zlib::Stream;
 use strict;
 use warnings;
 use Carp;
-use Compress::Zlib;
+use Compress::Raw::Zlib qw(Z_OK Z_STREAM_END Z_FINISH Z_SYNC_FLUSH);
 use vars qw($VERSION);
 use base qw(POE::Filter);
 
-$VERSION = '2.00';
+$VERSION = '2.01';
 
 sub new {
   my $type = shift;
@@ -16,13 +16,13 @@ sub new {
   $buffer->{ lc $_ } = delete $buffer->{ $_ } for keys %{ $buffer };
   $buffer->{BUFFER} = '';
   delete $buffer->{deflateopts} unless ref ( $buffer->{deflateopts} ) eq 'HASH';
-  $buffer->{d} = deflateInit( %{ $buffer->{deflateopts} } );
+  $buffer->{d} = Compress::Raw::Zlib::Deflate->new( %{ $buffer->{deflateopts} } );
   unless ( $buffer->{d} ) {
 	warn "Failed to create deflate stream\n";
 	return;
   }
   delete $buffer->{inflateopts} unless ref ( $buffer->{inflateopts} ) eq 'HASH';
-  $buffer->{i} = inflateInit( %{ $buffer->{inflateopts} } );
+  $buffer->{i} = Compress::Raw::Zlib::Inflate->new ( %{ $buffer->{inflateopts} } );
   unless ( $buffer->{i} ) {
 	warn "Failed to create inflate stream\n";
 	return;
@@ -44,13 +44,15 @@ sub get_one {
   my $self = shift;
 
   return [ ] unless length $self->{BUFFER};
-  my ($out, $status) = $self->{i}->inflate( \$self->{BUFFER} );
+  my ($status, $out);
+  $status = $self->{i}->inflate( \$self->{BUFFER}, $out );
+
   unless ( $status == Z_OK or $status == Z_STREAM_END ) {
-	warn "Couldn\'t inflate buffer\n";
-	return [ ];
+    warn "Couldn\'t inflate buffer\n";
+    return [ ];
   }
   if ($status == Z_STREAM_END) {
-  	$self->{i} = inflateInit( %{ $self->{inflateopts} } );
+    $self->{i} = Compress::Raw::Zlib::Inflate->new ( %{ $self->{inflateopts} } );
   }
   return [ $out ];
 }
@@ -65,18 +67,20 @@ sub put {
   my $raw_lines = [];
 
   foreach my $event (@$events) {
-	my ($dout,$dstat) = $self->{d}->deflate( $event );
+	my ($dstat, $dout);
+	$dstat = $self->{d}->deflate( $event, $dout );
 	unless ( $dstat == Z_OK ) {
-	  warn "Couldn\'t deflate: $event\n";
+	  warn "(data) Couldn\'t deflate: $event\n($dstat)";
 	  next;
 	}
-	my ($fout,$fstat) = $self->{d}->flush( $self->{flushtype} );
+	my ($fout,$fstat);
+	$fstat = $self->{d}->flush( $fout, $self->{flushtype} );
 	unless ( $fstat == Z_OK ) {
-	  warn "Couldn\'t flush/deflate: $event\n";
+	  warn "(flush) Couldn\'t flush/deflate: $event\n";
 	  next;
 	}
 	if ($self->{flushtype} == Z_FINISH) {
-  		$self->{d} = deflateInit( %{ $self->{deflateopts} } );
+  	  $self->{d} = Compress::Raw::Zlib::Deflate->new ( %{ $self->{deflateopts} } );
 	}
 	push @$raw_lines, $dout . $fout;
   }
@@ -87,6 +91,8 @@ sub clone {
   my $self = shift;
   my $nself = { };
   $nself->{$_} = $self->{$_} for keys %{ $self };
+  $nself->{d} = Compress::Raw::Zlib::Deflate->new( %{ $nself->{deflateopts} } );
+  $nself->{i} = Compress::Raw::Zlib::Inflate->new( %{ $nself->{inflateopts} } );
   $nself->{BUFFER} = '';
   return bless $nself, ref $self;
 }

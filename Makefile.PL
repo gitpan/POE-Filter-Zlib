@@ -11,7 +11,7 @@ build_requires 'POE::Filter::Stackable' => 0;
 build_requires 'POE::Filter::Line' => 0;
 requires 'warnings::compat' => 0 if $] < 5.006;
 requires 'Carp' => 0;
-requires 'Compress::Zlib' => 1.34;
+requires 'Compress::Raw::Zlib' => 2.000;
 requires 'POE'    => 0.38;
 requires 'POE::Filter' => 0;
 WriteAll();

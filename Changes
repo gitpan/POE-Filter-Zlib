@@ -1,6 +1,14 @@
 POE::Filter::Zlib
 =================
 
+2.01	Thu Jun 12 15:30:40 BST 2008
+	- Patch from Martijn van Beers [RT #36655]
+	- Patch from Martijn van Beers [RT #36657]
+
+2.00	Tue Jun 10 11:48:33 BST 2008
+	- Applied patches from Martijn van Beers
+	- Updated license and authorship to include Martijn.
+
 1.96	Tue May 20 11:48:33 BST 2008
 	- removed kwalitee test
 	- added license information

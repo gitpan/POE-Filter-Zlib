@@ -2,77 +2,16 @@ package POE::Filter::Zlib;
 
 use strict;
 use warnings;
-use Carp;
-use Compress::Zlib qw(compress uncompress Z_DEFAULT_COMPRESSION);
-use vars qw($VERSION);
-use base qw(POE::Filter);
 
-$VERSION = '2.00';
+use POE::Filter::Zlib::Stream;
+use Compress::Raw::Zlib qw(Z_FINISH);
+
+use vars qw($VERSION);
+
+$VERSION = '2.01';
 
 sub new {
-  my $type = shift;
-  croak "$type requires an even number of parameters" if @_ % 2;
-  my $buffer = { @_ };
-  $buffer->{ lc $_ } = delete $buffer->{ $_ } for keys %{ $buffer };
-  $buffer->{BUFFER} = [];
-  return bless $buffer, $type;
-}
-
-sub level {
-  my $self = shift;
-  my $level = shift;
-  $self->{level} = $level if defined $level;
-}
-
-# use inherited get() from POE::Filter
-
-sub get_one_start {
-  my ($self, $raw_lines) = @_;
-  push @{ $self->{BUFFER} }, $_ for @{ $raw_lines };
-}
-
-sub get_pending {
-  my $self = shift;
-  return $self->{BUFFER};
-}
-
-sub get_one {
-  my $self = shift;
-  my $events = [];
-
-  if ( my $raw_line = shift @{ $self->{BUFFER} } ) {
-	if ( my $line = uncompress( $raw_line ) ) {
-		push @$events, $line;
-	} 
-	else {
-		warn "Couldn\'t uncompress input: $raw_line\n";
-		#push @$events, $raw_line;
-	}
-  }
-  return $events;
-}
-
-sub put {
-  my ($self, $events) = @_;
-  my $raw_lines = [];
-
-  foreach my $event (@$events) {
-	if ( my $line = compress( $event, ( $self->{level} || Z_DEFAULT_COMPRESSION ) ) ) {
-		push @$raw_lines, $line;
-	} 
-	else {
-		warn "Couldn\'t compress output: $event\n";
-	}
-  }
-  return $raw_lines;
-}
-
-sub clone {
-  my $self = shift;
-  my $nself = { };
-  $nself->{$_} = $self->{$_} for keys %{ $self };
-  $nself->{BUFFER} = [ ];
-  return bless $nself, ref $self;
+  return POE::Filter::Zlib::Stream->new(flushtype => Z_FINISH);
 }
 
 1;

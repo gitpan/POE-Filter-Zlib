@@ -8,7 +8,7 @@ my $clone = $original->clone();
 
 foreach my $filter ( $original, $clone ) {
 
-  isa_ok( $filter, "POE::Filter::Zlib" );
+  isa_ok( $filter, "POE::Filter::Zlib::Stream" );
   isa_ok( $filter, "POE::Filter" );
 
   my $teststring = "All the little fishes";
